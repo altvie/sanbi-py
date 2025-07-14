@@ -14,33 +14,14 @@ class General(commands.Cog):
   async def ping(self, interaction: discord.Interaction):
     start_time = time.time()
 
-    embed = discord.Emebed(
-      title="🏓 Pong!",
-      color=discord.Color.green()
-    )
+    await interaction.response.send_message("Pong 🏓...")
 
-    # calculate latency
-    latency = round(self.bot.latency * 1000)
-
-    embed.add_field(
-      name="Bot Latency",
-      value=f"{latency}ms",
-      inline=True
-    )
-
-    await interaction.response.send_message(embed=embed)
-
-    # Calculate response time
     end_time = time.time()
-    response_time = round((end_time - start_time) * 1000)
+    diff = round((end_time - start_time) * 1000)
+    ping = round(self.bot.latency * 1000)
 
-    embed.add_field(
-      name="Response Time",
-      value=f"{response_time}ms",
-      inline=True
-    )
-
-    await interaction.edit_original_response(embed=embed)
+    content = f"Pong 🏓! - (Round trip took: `{diff}ms`. Heartbeat: `{ping}ms`.)"
+    await interaction.edit_original_response(content=content)
 
 async def setup(bot):
   await bot.add_cog(General(bot))
