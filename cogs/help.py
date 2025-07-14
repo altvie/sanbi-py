@@ -19,6 +19,7 @@ class HelpDropdown(Select):
       "Moderation": [
         ("/kick", "Kick user from server."),
         ("/ban", "Banned user from server."),
+        ("/unban", "Unbanned user from server by user id."),
       ]
     }
 
