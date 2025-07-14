@@ -174,14 +174,42 @@ class Utility(commands.Cog):
 
     await interaction.response.send_message(embed=embed)
 
+  @app_commands.command(name="avatar", description="Get a user's avatar")
+  @app_commands.describe(user="The user to get the avatar of")
+  async def avatar(self, interaction: discord.Interaction, user: Optional[discord.Member] = None):
+    if user is None:
+      user = interaction.user
+
+    embed = discord.Embed(
+      title=f"🖼️ Avatar - {user.display_name}",
+      color=user.color if user.color != discord.Color.default() else discord.Color.blue()
+    )
+
+    if user.avatar:
+      embed.set_image(url=user.avatar.url)
+      embed.add_field(
+        name="Links",
+        value=f"[PNG]({user.avatar.with_format('png').url}) | "
+              f"[JPG]({user.avatar.with_format('jpg').url}) | "
+              f"[WEBP]({user.avatar.with_format('webp').url})",
+        inline=False
+      )
+    else:
+      embed.description = "User has no custom avatar"
+      embed.set_image(url=user.default_avatar.url)
+
+    await interaction.response.send_message(embed=embed)
+
   async def cog_load(self):
     if self.env == "dev" and self.guild_id:
       guild = discord.Object(id=self.guild_id)
       self.bot.tree.add_command(self.userinfo, guild=guild)
       self.bot.tree.add_command(self.serverinfo, guild=guild)
+      self.bot.tree.add_command(self.avatar, guild=guild)
     else:
       self.bot.tree.add_command(self.userinfo)
       self.bot.tree.add_command(self.serverinfo)
+      self.bot.tree.add_command(self.avatar)
 
 async def setup(bot):
   await bot.add_cog(Utility(bot))

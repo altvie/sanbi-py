@@ -14,6 +14,7 @@ class HelpDropdown(Select):
       "Utility": [
         ("/userinfo", "Show user information."),
         ("/serverinfo", "Show server information."),
+        ("/avatar", "Get a user's avatar."),
       ],
       "Moderation": [
         ("/kick", "Kick user from server."),
