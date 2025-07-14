@@ -39,6 +39,7 @@ class DiscordBot(commands.Bot):
     self.initial_extensions = [
       'cogs.general',
       'cogs.help',
+      'cogs.moderation',
       'cogs.utility'
     ]
   
