@@ -12,7 +12,7 @@ load_dotenv()
 # Configure logging
 logging.basicConfig(
   level=logging.INFO,
-  format='%(asctime)s - %(levelname)s - %(message)s',
+  format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
   handlers=[
     logging.StreamHandler()
   ]
@@ -37,8 +37,8 @@ class DiscordBot(commands.Bot):
     )
 
     self.initial_extensions = [
-      'cogs.general',
-      'cogs.events'
+      'cogs.general'
+      # 'cogs.events'
     ]
   
   async def setup_hook(self):
@@ -51,11 +51,21 @@ class DiscordBot(commands.Bot):
         logger.info(f"Loaded extension: {extension}")
       except Exception as e:
         logger.error((f"Failed to load extension {extension}: {e}"))
+
+    # Detect environment
+    mode = os.getenv("MODE", "prod").lower()
+    is_dev = mode == "dev"
     
     # Sync slash commands
     try:
-      synced = await self.tree.sync()
-      logger.info(f"Synced {len(synced)} commands(s)")
+      if is_dev:
+        guild_id = int(os.getenv("GUILD_ID"))
+        guild = discord.Object(id=guild_id)
+        synced = await self.tree.sync(guild=guild)
+        logger.info(f"(Dev) Synced {len(synced)} commands(s)")
+      else:
+        synced = await self.tree.sync()
+        logger.info(f"(Prod) Synced {len(synced)} commands(s)")
     except Exception as e:
       logger.error(f"Failed to sync commands: {e}")
   
