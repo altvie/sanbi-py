@@ -2,24 +2,12 @@ import os
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-import logging
 import asyncio
 from pathlib import Path
+from config import logger
 
 # Load environemt variables
 load_dotenv()
-
-# Configure logging
-logging.basicConfig(
-  level=logging.INFO,
-  format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-  handlers=[
-    logging.StreamHandler()
-  ]
-)
-
-logger = logging.getLogger(__name__)
-logging.getLogger('discord').setLevel(logging.WARNING)
 
 class DiscordBot(commands.Bot):
   def __init__(self):
