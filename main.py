@@ -25,6 +25,7 @@ class DiscordBot(commands.Bot):
     )
 
     self.initial_extensions = [
+      'cogs.events',
       'cogs.general',
       'cogs.help',
       'cogs.moderation',
