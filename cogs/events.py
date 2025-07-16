@@ -1,11 +1,15 @@
 import discord
 from discord.ext import commands
 from datetime import datetime
-from config import LOG_MESSAGE_EDIT, logger
+import logging
+import os
+
+logger = logging.getLogger(__name__)
 
 class Events(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
+    self.channel_message_edit = int(os.getenv("LOG_MESSAGE_EDIT", 0))
 
   @commands.Cog.listener()
   async def on_message_edit(self, before, after):
@@ -13,7 +17,7 @@ class Events(commands.Cog):
       return
 
     logger.debug(f"Message edited in {before.guild.name} #{before.channel.name} by {before.author}")
-    channel = self.bot.get_channel(LOG_MESSAGE_EDIT)
+    channel = self.bot.get_channel(self.channel_message_edit)
     if not channel:
       logger.warning("Channel ID not found or bot has no access.")
       return
