@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 from typing import Optional
 from core.command import register_commands
+from core.embed import create_embed
 import asyncio
 import os
 
@@ -51,25 +52,29 @@ class Moderation(commands.Cog):
 
     try:
       try:
-        embed = discord.Embed(
+        embed = create_embed(
           title="🦶 You have been kicked",
           description=f"You have been kicked from **{interaction.guild.name}**",
-          color=discord.Color.orange()
+          color=discord.Color.orange(),
+          fields=[
+            ("Reason", reason, False),
+            ("Moderator", interaction.user.mention, False)
+          ]
         )
-        embed.add_field(name="Reason", value=reason, inline=False)
-        embed.add_field(name="Moderator", value=interaction.user.mention, inline=False)
         await user.send(embed=embed)
       except:
         pass
 
       await user.kick(reason=f"{reason} - By {interaction.user}")
 
-      embed = discord.Embed(
+      embed = create_embed(
         title="✅ User Kicked",
         description=f"{user.mention} has been kicked.",
-        color=discord.Color.green()
+        color=discord.Color.green(),
+        fields=[
+          ("Reason", reason, False)
+        ]
       )
-      embed.add_field(name="Reason", value=reason, inline=False)
       await interaction.response.send_message(embed=embed)
 
     except discord.Forbidden:
@@ -109,24 +114,24 @@ class Moderation(commands.Cog):
 
     try:
       try:
-        embed = discord.Embed(
+        embed = create_embed(
           title="🔨 You have been banned",
           description=f"You have been banned from **{interaction.guild.name}**",
-          color=discord.Color.red()
+          color=discord.Color.red(),
+          fields=[("Reason", reason, False)]
         )
-        embed.add_field(name="Reason", value=reason, inline=False)
         await user.send(embed=embed)
       except:
         pass
 
       await user.ban(reason=f"{reason} - By {interaction.user}", delete_message_days=delete_messages)
 
-      embed = discord.Embed(
+      embed = create_embed(
         title="✅ User Banned",
         description=f"{user.mention} has been banned.",
-        color=discord.Color.green()
+        color=discord.Color.green(),
+        fields=[("Reason", reason, False)]
       )
-      embed.add_field(name="Reason", value=reason, inline=False)
       await interaction.response.send_message(embed=embed)
 
     except discord.Forbidden:
@@ -152,15 +157,19 @@ class Moderation(commands.Cog):
 
     try:
       user_id = int(user_id)
-      bans = await interaction.guild.bans()
-      user = next((ban.user for ban in bans if ban.user.id == user_id), None)
+      user = None
+
+      async for ban_entry in interaction.guild.bans():
+        if ban_entry.user.id == user_id:
+          user = ban_entry.user
+          break
 
       if not user:
         await interaction.response.send_message("❌ User is not banned!", ephemeral=True)
         return
 
       await interaction.guild.unban(user, reason=f"{reason} - By {interaction.user}")
-      embed = discord.Embed(
+      embed = create_embed(
         title="✅ User Unbanned",
         description=f"{user} has been unbanned.",
         color=discord.Color.green()

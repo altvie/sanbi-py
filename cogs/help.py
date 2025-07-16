@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord import app_commands, SelectOption
 from discord.ui import View, Select
 from core.command import register_commands
+from core.embed import create_embed
 import os
 
 class HelpDropdown(Select):
@@ -38,10 +39,13 @@ class HelpDropdown(Select):
 
   async def callback(self, interaction: discord.Interaction):
     selected = self.values[0]
-    embed = discord.Embed(
+    fields = [(name, desc, False) for name, desc in self.command_categories[selected]]
+
+    embed = create_embed(
       title=f"{selected} Commands",
-      description=f"Commands list for **{selected}**:",
-      color=discord.Color.green()
+      description=f"Here are the commands under **{selected}**:",
+      color=discord.Color.green(),
+      fields=fields
     )
 
     for name, desc in self.command_categories[selected]:
@@ -65,12 +69,11 @@ class Help(commands.Cog):
   @app_commands.command(name="help", description="Show bot commands list")
   async def help(self, interaction: discord.Interaction):
     view = HelpView()
-    embed = discord.Embed(
+    embed = create_embed(
       title="📖 Help Menu",
-      description="Select category from menu dropdown.",
+      description="Select a category from the dropdown menu below to view commands.",
       color=discord.Color.blurple()
     )
-
     await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
   
   async def cog_load(self):
