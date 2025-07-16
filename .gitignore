@@ -161,4 +161,4 @@ settings.json
 *.backup
 
 # Data
-data/
+data/users.json
