@@ -70,48 +70,13 @@ class Utility(commands.Cog):
   async def serverinfo(self, interaction: discord.Interaction):
     guild = interaction.guild
 
-    embed = discord.Embed(
-      title=f"🏰 Server Information - {guild.name}",
-      color=discord.Color.purple()
-    )
-
-    if guild.icon:
-      embed.set_thumbnail(url=guild.icon.url)
-
-    embed.add_field(
-      name="📋 Basic Info",
-      value=f"**Name:** {guild.name}\n"
-            f"**ID:** {guild.id}\n"
-            f"**Owner:** {guild.owner.mention if guild.owner else 'Unknown'}\n"
-            f"**Created:** {guild.created_at.strftime('%B %d, %Y')}",
-      inline=True
-    )
-
     total_members = guild.member_count
     online_members = len([m for m in guild.members if m.status != discord.Status.offline])
     bot_count = len([m for m in guild.members if m.bot])
 
-    embed.add_field(
-      name="👥 Members",
-      value=f"**Total:** {total_members}\n"
-            f"**Online:** {online_members}\n"
-            f"**Bots:** {bot_count}\n"
-            f"**Humans:** {total_members - bot_count}",
-      inline=True
-    )
-
     text_channels = len(guild.text_channels)
     voice_channels = len(guild.voice_channels)
     categories = len(guild.categories)
-
-    embed.add_field(
-      name="📺 Channels",
-      value=f"**Text:** {text_channels}\n"
-            f"**Voice:** {voice_channels}\n"
-            f"**Categories:** {categories}\n"
-            f"**Total:** {text_channels + voice_channels}",
-      inline=True
-    )
 
     features = []
     if guild.premium_tier > 0:
@@ -121,23 +86,55 @@ class Utility(commands.Cog):
     if guild.verification_level != discord.VerificationLevel.none:
       features.append(f"Verification: {guild.verification_level.name.title()}")
 
-    if features:
-      embed.add_field(
-        name="✨ Features",
-        value="\n".join(features),
-        inline=False
+    fields = [
+      (
+        "📋 Basic Info",
+        f"**Name:** {guild.name}\n"
+        f"**ID:** {guild.id}\n"
+        f"**Owner:** {guild.owner.mention if guild.owner else 'Unknown'}\n"
+        f"**Created:** {guild.created_at.strftime('%B %d, %Y')}",
+        True
+      ),
+      (
+        "👥 Members",
+        f"**Total:** {total_members}\n"
+        f"**Online:** {online_members}\n"
+        f"**Bots:** {bot_count}\n"
+        f"**Humans:** {total_members - bot_count}",
+        True
+      ),
+      (
+        "📺 Channels",
+        f"**Text:** {text_channels}\n"
+        f"**Voice:** {voice_channels}\n"
+        f"**Categories:** {categories}\n"
+        f"**Total:** {text_channels + voice_channels}",
+        True
+      ),
+      (
+        "🎭 Roles",
+        f"**Count:** {len(guild.roles)}",
+        True
+      ),
+      (
+        "😀 Emojis",
+        f"**Count:** {len(guild.emojis)}",
+        True
       )
+    ]
 
-    embed.add_field(
-      name="🎭 Roles",
-      value=f"**Count:** {len(guild.roles)}",
-      inline=True
-    )
+    if features:
+      fields.append((
+        "✨ Features",
+        "\n".join(features),
+        False
+      ))
 
-    embed.add_field(
-      name="😀 Emojis",
-      value=f"**Count:** {len(guild.emojis)}",
-      inline=True
+    embed = create_embed(
+      title=f"🏰 Server Information - {guild.name}",
+      color=discord.Color.purple(),
+      thumbnail=guild.icon.url if guild.icon else None,
+      fields=fields
     )
 
     await interaction.response.send_message(embed=embed)
