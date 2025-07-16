@@ -22,14 +22,6 @@ class Utility(commands.Cog):
     created_at = user.created_at.strftime("%B %d, %Y")
     joined_at = user.joined_at.strftime("%B %d, %Y") if user.joined_at else "Unknown"
 
-    # Status
-    status_emoji = {
-      discord.Status.online: "🟢",
-      discord.Status.idle: "🟡",
-      discord.Status.dnd: "🔴",
-      discord.Status.offline: "⚫"
-    }
-
     # Roles
     roles = [role.mention for role in user.roles[1:]]  # skip @everyone
     roles_text = ", ".join(roles[:10]) if roles else "None"
@@ -43,22 +35,17 @@ class Utility(commands.Cog):
         (
           "📋 Basic Info",
           f"**Username:** {user.name}\n**Display Name:** {user.display_name}\n**ID:** {user.id}\n**Bot:** {'Yes' if user.bot else 'No'}",
-          True
+          False
         ),
         (
           "📅 Dates",
           f"**Created:** {created_at}\n**Joined:** {joined_at}",
-          True
-        ),
-        (
-          "📱 Status",
-          f"**Status:** {status_emoji.get(user.status, '❓')} {user.status}\n**Activity:** {user.activity.name if user.activity else 'None'}",
-          True
+          False
         ),
         (
           f"🎭 Roles ({len(user.roles) - 1})",
           roles_text,
-          True
+          False
         )
       ],
       thumbnail=user.avatar.url if user.avatar else None
