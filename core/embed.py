@@ -26,10 +26,10 @@ def create_embed(
   if thumbnail:
     embed.set_thumbnail(url=thumbnail)
   if image:
-    embed.set_thumbnail(url=image)
+    embed.set_image(url=image)
   if footer:
-    embed.set_thumbnail(url=footer)
+    embed.set_footer(url=footer)
   if author:
-    embed.set_thumbnail(url=author)
+    embed.set_author(url=author)
   
   return embed
