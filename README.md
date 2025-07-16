@@ -19,6 +19,7 @@ sanbi-py/
 │   ├── __init__.py
 │   ├── command.py          # register_command
 │   ├── core_economy.py     # Economy function (get_wallet, etc)
+│   ├── embed.py            # Reusable embed function (create_embed)
 │   └── users.py            # User function (load_data, save_data, etc)
 ├── data/
 │   ├── users.json          # User database
