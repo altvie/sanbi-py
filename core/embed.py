@@ -11,8 +11,8 @@ def create_embed(
   author=None
 ):
   embed = discord.Embed(
-    title=title or discord.Embed.Empty,
-    description=description or discord.Embed.Empty,
+    title=title or "",
+    description=description or "",
     color=color
   )
   
