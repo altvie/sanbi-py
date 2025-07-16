@@ -1,55 +1,33 @@
-import os, json
-from pathlib import Path
+from core.user import load_data, save_data
 
-DATA_FILE = Path('data/economy.json')
+def get_wallet(user_id):
+  return load_data()[str(user_id)]["economy"]["wallet"]
 
-def load_data():
-  if not DATA_FILE.exists():
-    DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with open(DATA_FILE, "w") as f:
-      json.dump({}, f)
-
-  try:
-    with open(DATA_FILE, "r") as f:
-      return json.load(f)
-  except json.JSONDecodeError:
-    with open(DATA_FILE, "w") as f:
-      json.dump({}, f)
-    return {}
-
-def save_data(data):
-  with open(DATA_FILE, "w") as f:
-    json.dump(data, f, indent=2)
-
-def open_account(user_id):
+def update_wallet(user_id, amount):
   data = load_data()
   uid = str(user_id)
-  if uid not in data:
-    data[uid] = {
-      "wallet": 0,
-      "bank": 0,
-      "last_daily": "",
-      "inventory": []
-    }
-    save_data(data)
-  return data
-
-def get_balance(user_id):
-  data = load_data()
-  uid = str(user_id)
-  return data.get(uid, {
-    "wallet": 0,
-    "bank": 0,
-    "last_daily": "",
-    "inventory": []
-  })
-
-def update_balance(user_id, amount, target="wallet"):
-  data = load_data()
-  uid = str(user_id)
-  if uid not in data:
-    open_account(user_id)
-    data = load_data()
-  data[uid][target] += amount
+  data[uid]["economy"]["wallet"] += amount
   save_data(data)
-  return data[uid][target]
+  return data[uid]["economy"]["wallet"]
+
+def get_bank(user_id):
+  return load_data()[str(user_id)]["economy"]["bank"]
+
+def update_bank(user_id, amount):
+  data = load_data()
+  uid = str(user_id)
+  data[uid]["economy"]["bank"] += amount
+  save_data(data)
+  return data[uid]["economy"]["bank"]
+
+def update_stat(user_id, stat_name, amount=1):
+  data = load_data()
+  uid = str(user_id)
+  if stat_name in data[uid]["stats"]:
+    data[uid]["stats"][stat_name] += amount
+  else:
+    data[uid]["stats"][stat_name] = amount
+  save_data(data)
+
+def get_stat(user_id, stat_name):
+  return load_data()[str(user_id)]["stats"].get(stat_name, 0)
