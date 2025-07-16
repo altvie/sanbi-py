@@ -29,8 +29,6 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-data/users.json
-
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
@@ -161,3 +159,6 @@ settings.json
 # Backup files
 *.bak
 *.backup
+
+# Data
+data/
