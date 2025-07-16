@@ -8,7 +8,9 @@ def create_embed(
   thumbnail=None,
   image=None,
   footer=None,
-  author=None
+  author=None,
+  author_icon=None,
+  footer_icon=None
 ):
   embed = discord.Embed(
     title=title or "",
@@ -28,8 +30,8 @@ def create_embed(
   if image:
     embed.set_image(url=image)
   if footer:
-    embed.set_footer(url=footer)
+    embed.set_footer(url=footer, icon_url=footer_icon)
   if author:
-    embed.set_author(url=author)
+    embed.set_author(url=author, author_icon=author_icon)
   
   return embed
