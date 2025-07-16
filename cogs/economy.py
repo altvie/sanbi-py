@@ -5,6 +5,7 @@ from core import users as user_db
 from core import core_economy as eco
 from core.command import register_commands
 from datetime import datetime
+from core.embed import create_embed
 import os, random
 
 class Economy(commands.Cog):
@@ -19,12 +20,21 @@ class Economy(commands.Cog):
     wallet = eco.get_wallet(interaction.user.id)
     bank = eco.get_bank(interaction.user.id)
 
-    embed = discord.Embed(
+    embed = create_embed(
       title=f"{interaction.user.name}'s Balance",
-      color=discord.Color.blurple()
+      fields=[
+        (
+          "💰 Wallet",
+          f"${wallet}",
+          True
+        ),
+        (
+          "🏦 Bank",
+          f"${bank}",
+          True
+        )
+      ]
     )
-    embed.add_field(name="💰 Wallet", value=f"${wallet}")
-    embed.add_field(name="🏦 Bank", value=f"${bank}")
     await interaction.response.send_message(embed=embed)
 
   @app_commands.command(name="daily", description="Claim your daily reward")
