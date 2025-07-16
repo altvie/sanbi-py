@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 from typing import Optional
 from core.command import register_commands
-import datetime
+from core.embed import create_embed
 import os
 
 class Utility(commands.Cog):
@@ -17,35 +17,10 @@ class Utility(commands.Cog):
   async def userinfo(self, interaction: discord.Interaction, user: Optional[discord.Member] = None):
     if user is None:
       user = interaction.user
-    
-    embed = discord.Embed(
-      title=f"👤 User Information - {user}",
-      color=user.color if user.color != discord.Color.default() else discord.Color.blue()
-    )
-
-    if user.avatar:
-      embed.set_thumbnail(url=user.avatar.url)
-
-    # Basic info
-    embed.add_field(
-      name="📋 Basic Info",
-      value=f"**Username:** {user.name}\n"
-            f"**Display Name:** {user.display_name}\n"
-            f"**ID:** {user.id}\n"
-            f"**Bot:** {'Yes' if user.bot else 'No'}",
-      inline=True
-    )
 
     # Dates
     created_at = user.created_at.strftime("%B %d, %Y")
     joined_at = user.joined_at.strftime("%B %d, %Y") if user.joined_at else "Unknown"
-
-    embed.add_field(
-      name="📅 Dates",
-      value=f"**Created:** {created_at}\n"
-            f"**Joined:** {joined_at}",
-      inline=True
-    )
 
     # Status
     status_emoji = {
@@ -55,47 +30,39 @@ class Utility(commands.Cog):
       discord.Status.offline: "⚫"
     }
 
-    embed.add_field(
-      name="📱 Status",
-      value=f"**Status:** {status_emoji.get(user.status, '❓')} {user.status}\n"
-            f"**Activity:** {user.activity.name if user.activity else 'None'}",
-      inline=True
-    )
-
     # Roles
     roles = [role.mention for role in user.roles[1:]]  # skip @everyone
     roles_text = ", ".join(roles[:10]) if roles else "None"
     if len(roles) > 10:
       roles_text += f" and {len(roles) - 10} more..."
 
-    embed.add_field(
-      name=f"🎭 Roles ({len(user.roles) - 1})",
-      value=roles_text,
-      inline=False
+    embed = create_embed(
+      title=f"👤 User Information - {user}",
+      color=user.color if user.color != discord.Color.default() else discord.Color.blue(),
+      fields=[
+        (
+          "📋 Basic Info",
+          f"**Username:** {user.name}\n**Display Name:** {user.display_name}\n**ID:** {user.id}\n**Bot:** {'Yes' if user.bot else 'No'}",
+          True
+        ),
+        (
+          "📅 Dates",
+          f"**Created:** {created_at}\n**Joined:** {joined_at}",
+          True
+        ),
+        (
+          "📱 Status",
+          f"**Status:** {status_emoji.get(user.status, '❓')} {user.status}\n**Activity:** {user.activity.name if user.activity else 'None'}",
+          True
+        ),
+        (
+          f"🎭 Roles ({len(user.roles) - 1})",
+          roles_text,
+          True
+        )
+      ],
+      thumbnail=user.avatar.url if user.avatar else None
     )
-
-    # Key permissions
-    key_perms = []
-    perms = user.guild_permissions
-    if perms.administrator:
-      key_perms.append("Administrator")
-    if perms.manage_guild:
-      key_perms.append("Manage Server")
-    if perms.manage_channels:
-      key_perms.append("Manage Channels")
-    if perms.manage_messages:
-      key_perms.append("Manage Messages")
-    if perms.kick_members:
-      key_perms.append("Kick Members")
-    if perms.ban_members:
-      key_perms.append("Ban Members")
-
-    if key_perms:
-      embed.add_field(
-        name="🔑 Key Permissions",
-        value=", ".join(key_perms),
-        inline=False
-      )
 
     await interaction.response.send_message(embed=embed)
 
