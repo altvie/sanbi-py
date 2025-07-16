@@ -54,16 +54,45 @@ class Economy(commands.Cog):
     eco.update_stat(user.id, "work_count")
     await interaction.response.send_message(f"`💼` You earned ${earned} from working!")
 
+  @app_commands.command(name="gamble", description="Try your luck and gamble some money!")
+  @app_commands.describe(amount="Amount of money to gamble")
+  async def gamble(self, interaction: discord.Interaction, amount: int):
+    user = interaction.user
+    uid = str(user.id)
+
+    user_db.open_account(user)
+    wallet = eco.get_wallet(uid)
+
+    if amount <= 0:
+      await interaction.response.send_message("`❌` The amount must be greater than 0.", ephemeral=True)
+      return
+
+    if amount > wallet:
+      await interaction.response.send_message("`❌` You don't have enough money to gamble that much.", ephemeral=True)
+      return
+
+    # Winning chance 45%
+    if random.random() < 0.45:
+      eco.update_wallet(uid, amount)
+      eco.update_stat(uid, "gambles_won")
+      await interaction.response.send_message(f"`🎉` You **won** $`{amount}`! Your luck is shining!")
+    else:
+      eco.update_wallet(uid, -amount)
+      eco.update_stat(uid, "gambles_lost")
+      await interaction.response.send_message(f"`💸` You **lost** $`{amount}`. Better luck next time!")
+
   async def cog_load(self):
     if self.env == "dev" and self.guild_id:
       guild = discord.Object(id=self.guild_id)
       self.bot.tree.add_command(self.balance, guild=guild)
       self.bot.tree.add_command(self.daily, guild=guild)
       self.bot.tree.add_command(self.work, guild=guild)
+      self.bot.tree.add_command(self.gamble, guild=guild)
     else:
       self.bot.tree.add_command(self.balance)
       self.bot.tree.add_command(self.daily)
       self.bot.tree.add_command(self.work)
+      self.bot.tree.add_command(self.gamble)
 
 async def setup(bot):
   await bot.add_cog(Economy(bot))
