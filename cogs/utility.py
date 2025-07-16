@@ -141,27 +141,40 @@ class Utility(commands.Cog):
 
   @app_commands.command(name="avatar", description="Get a user's avatar")
   @app_commands.describe(user="The user to get the avatar of")
-  async def avatar(self, interaction: discord.Interaction, user: Optional[discord.Member] = None):
+  async def avatar(self, interaction: discord.Interaction, user: discord.Member = None):
     if user is None:
       user = interaction.user
 
-    embed = discord.Embed(
-      title=f"🖼️ Avatar - {user.display_name}",
-      color=user.color if user.color != discord.Color.default() else discord.Color.blue()
-    )
-
+    # Siapkan format avatar
     if user.avatar:
-      embed.set_image(url=user.avatar.url)
-      embed.add_field(
-        name="Links",
-        value=f"[PNG]({user.avatar.with_format('png').url}) | "
-              f"[JPG]({user.avatar.with_format('jpg').url}) | "
-              f"[WEBP]({user.avatar.with_format('webp').url})",
-        inline=False
+      png = user.avatar.replace(format='png').url
+      jpg = user.avatar.replace(format='jpg').url
+      webp = user.avatar.replace(format='webp').url
+      gif = user.avatar.replace(format='gif').url if user.avatar.is_animated() else None
+
+      links = [f"[PNG]({png})", f"[JPG]({jpg})", f"[WEBP]({webp})"]
+      if gif:
+        links.append(f"[GIF]({gif})")
+
+      embed = create_embed(
+        title=f"🖼️ Avatar - {user.display_name}",
+        color=user.color if user.color != discord.Color.default() else discord.Color.blue(),
+        image=user.avatar.url,
+        fields=[
+          (
+            "Links",
+            " | ".join(links),
+            False
+          )
+        ]
       )
     else:
-      embed.description = "User has no custom avatar"
-      embed.set_image(url=user.default_avatar.url)
+      embed = create_embed(
+        title=f"🖼️ Avatar - {user.display_name}",
+        description="User has no custom avatar",
+        color=discord.Color.blue(),
+        image=user.default_avatar.url
+      )
 
     await interaction.response.send_message(embed=embed)
 
