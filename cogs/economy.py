@@ -81,18 +81,5 @@ class Economy(commands.Cog):
       eco.update_stat(uid, "gambles_lost")
       await interaction.response.send_message(f"`💸` You **lost** $`{amount}`. Better luck next time!")
 
-  async def cog_load(self):
-    if self.env == "dev" and self.guild_id:
-      guild = discord.Object(id=self.guild_id)
-      self.bot.tree.add_command(self.balance, guild=guild)
-      self.bot.tree.add_command(self.daily, guild=guild)
-      self.bot.tree.add_command(self.work, guild=guild)
-      self.bot.tree.add_command(self.gamble, guild=guild)
-    else:
-      self.bot.tree.add_command(self.balance)
-      self.bot.tree.add_command(self.daily)
-      self.bot.tree.add_command(self.work)
-      self.bot.tree.add_command(self.gamble)
-
 async def setup(bot):
   await bot.add_cog(Economy(bot))

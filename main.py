@@ -43,23 +43,6 @@ class DiscordBot(commands.Bot):
         logger.info(f"Loaded extension: {extension}")
       except Exception as e:
         logger.error((f"Failed to load extension {extension}: {e}"))
-
-    # Detect environment
-    mode = os.getenv("MODE", "prod").lower()
-    is_dev = mode == "dev"
-    
-    # Sync slash commands
-    try:
-      if is_dev:
-        guild_id = int(os.getenv("GUILD_ID"))
-        guild = discord.Object(id=guild_id)
-        synced = await self.tree.sync(guild=guild)
-        logger.info(f"(Dev) Synced {len(synced)} commands(s)")
-      else:
-        synced = await self.tree.sync()
-        logger.info(f"(Prod) Synced {len(synced)} commands(s)")
-    except Exception as e:
-      logger.error(f"Failed to sync commands: {e}")
   
   # Called when the bot is ready
   async def on_ready(self):
@@ -73,6 +56,18 @@ class DiscordBot(commands.Bot):
         name='on development!'
       )
     )
+
+    # Sync ONLY to development guild
+    try:
+      dev_guild_id = int(os.getenv("GUILD_ID", 0))
+      if dev_guild_id:
+        guild = discord.Object(id=dev_guild_id)
+        synced = await self.tree.sync(guild=guild)
+        logger.info(f"(Dev) Synced {len(synced)} command(s) to guild {dev_guild_id}")
+      else:
+        logger.warning("GUILD_ID is not set or invalid")
+    except Exception as e:
+      logger.error(f"Failed to sync commands: {e}")
   
   # Global error handler for prefix commands
   async def on_command_error(self, ctx, error):

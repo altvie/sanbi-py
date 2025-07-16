@@ -10,18 +10,19 @@ class Moderation(commands.Cog):
     self.bot = bot
     self.env = os.getenv("MODE", "prod").lower()
     self.guild_id = int(os.getenv("GUILD_ID", 0))
+    self.owned_id = int(os.getenv("BOT_OWNER_ID", 0))
 
-  async def cog_load(self):
-    # Manual command registration for dev mode
-    if self.env == "dev" and self.guild_id:
-      guild = discord.Object(id=self.guild_id)
-      self.bot.tree.add_command(self.kick, guild=guild)
-      self.bot.tree.add_command(self.ban, guild=guild)
-      self.bot.tree.add_command(self.unban, guild=guild)
-    else:
-      self.bot.tree.add_command(self.kick)
-      self.bot.tree.add_command(self.ban)
-      self.bot.tree.add_command(self.unban)
+  @app_commands.command(name="sync", description="Sync all application commands (owner only)")
+  async def sync_commands(self, interaction: discord.Interaction):
+    if interaction.user.id != self.owned_id:
+      await interaction.response.send_message("`❌` You don't have persmission to use rhis command.", ephemeral=True)
+      return
+
+    try:
+      synced = await self.bot.tree.sync()
+      await interaction.response.send_message(f"`✅` Synced {len(synced)} commands globally.", ephemeral=True)
+    except Exception as e:
+      await interaction.response.send_message(f"`❌` Failed to sync: {e}", ephemeral=True)
 
   @app_commands.command(name="kick", description="Kick a user from the server")
   @app_commands.describe(
@@ -167,6 +168,9 @@ class Moderation(commands.Cog):
 
     except Exception as e:
       await interaction.response.send_message(f"❌ An error occurred: {e}", ephemeral=True)
+
+  # async def cog_load(self):
+  #   self.bot.tree.add_command(self.sync_commands)
 
 async def setup(bot):
   await bot.add_cog(Moderation(bot))

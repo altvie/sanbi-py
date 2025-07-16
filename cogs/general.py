@@ -36,14 +36,5 @@ class General(commands.Cog):
     
     await interaction.response.send_message(message)
 
-  async def cog_load(self):
-    if self.env == "dev" and self.guild_id:
-      guild = discord.Object(id=self.guild_id)
-      self.bot.tree.add_command(self.ping, guild=guild)
-      self.bot.tree.add_command(self.say, guild=guild)
-    else:
-      self.bot.tree.add_command(self.ping)
-      self.bot.tree.add_command(self.say)
-
 async def setup(bot):
   await bot.add_cog(General(bot))

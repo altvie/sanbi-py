@@ -71,13 +71,6 @@ class Help(commands.Cog):
     )
 
     await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
-  
-  async def cog_load(self):
-    if self.env == "dev" and self.guild_id:
-      guild = discord.Object(id=self.guild_id)
-      self.bot.tree.add_command(self.help, guild=guild)
-    else:
-      self.bot.tree.add_command(self.help)
 
 async def setup(bot):
   await bot.add_cog(Help(bot))
