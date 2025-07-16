@@ -93,7 +93,7 @@ class Utility(commands.Cog):
         f"**ID:** {guild.id}\n"
         f"**Owner:** {guild.owner.mention if guild.owner else 'Unknown'}\n"
         f"**Created:** {guild.created_at.strftime('%B %d, %Y')}",
-        True
+        False
       ),
       (
         "👥 Members",
@@ -101,7 +101,7 @@ class Utility(commands.Cog):
         f"**Online:** {online_members}\n"
         f"**Bots:** {bot_count}\n"
         f"**Humans:** {total_members - bot_count}",
-        True
+        False
       ),
       (
         "📺 Channels",
@@ -109,17 +109,17 @@ class Utility(commands.Cog):
         f"**Voice:** {voice_channels}\n"
         f"**Categories:** {categories}\n"
         f"**Total:** {text_channels + voice_channels}",
-        True
+        False
       ),
       (
         "🎭 Roles",
         f"**Count:** {len(guild.roles)}",
-        True
+        False
       ),
       (
         "😀 Emojis",
         f"**Count:** {len(guild.emojis)}",
-        True
+        False
       )
     ]
 
