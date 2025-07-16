@@ -1,4 +1,4 @@
-from core.user import load_data, save_data
+from core.users import load_data, save_data
 
 def get_wallet(user_id):
   return load_data()[str(user_id)]["economy"]["wallet"]

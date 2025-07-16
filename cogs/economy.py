@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from core import user as user_db
+from core import users as user_db
 from core import core_economy as eco
 from datetime import datetime
 import os, random
@@ -55,9 +55,8 @@ class Economy(commands.Cog):
     await interaction.response.send_message(f"`💼` You earned ${earned} from working!")
 
   async def cog_load(self):
-    guild = discord.Object(id=self.guild_id) if self.env == "dev" and self.guild_id else None
-
-    if guild:
+    if self.env == "dev" and self.guild_id:
+      guild = discord.Object(id=self.guild_id)
       self.bot.tree.add_command(self.balance, guild=guild)
       self.bot.tree.add_command(self.daily, guild=guild)
       self.bot.tree.add_command(self.work, guild=guild)
