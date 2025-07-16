@@ -1,0 +1,20 @@
+{
+  "557900655084437504": {
+    "name": "user.zsh",
+    "level": 1,
+    "role": "member",
+    "economy": {
+      "wallet": 649,
+      "bank": 100,
+      "last_daily": "",
+      "last_work": "",
+      "inventory": []
+    },
+    "stats": {
+      "daily_claimed": 0,
+      "work_count": 5,
+      "gamble_won": 0,
+      "gamble_lost": 0
+    }
+  }
+}
