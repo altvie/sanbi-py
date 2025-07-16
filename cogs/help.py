@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands, SelectOption
 from discord.ui import View, Select
+from core.command import register_commands
 import os
 
 class HelpDropdown(Select):
@@ -71,6 +72,12 @@ class Help(commands.Cog):
     )
 
     await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+  
+  async def cog_load(self):
+    if self.env == "dev" and self.guild_id:
+      register_commands(self.bot, self, guild_id=self.guild_id)
+    else:
+      register_commands(self.bot, self)
 
 async def setup(bot):
   await bot.add_cog(Help(bot))

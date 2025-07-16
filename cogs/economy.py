@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 from core import users as user_db
 from core import core_economy as eco
+from core.command import register_commands
 from datetime import datetime
 import os, random
 
@@ -80,6 +81,60 @@ class Economy(commands.Cog):
       eco.update_wallet(uid, -amount)
       eco.update_stat(uid, "gambles_lost")
       await interaction.response.send_message(f"`💸` You **lost** $`{amount}`. Better luck next time!")
+
+  @app_commands.command(name="deposit", description="Deposit money to your bank account")
+  @app_commands.describe(amount="Amount of money to deposit (use 'all' to deposit everything)")
+  async def deposit(self, interaction: discord.Interaction, amount: str):
+    user = interaction.user
+    user_db.open_account(user)
+    uid = str(user.id)
+    wallet_balance = eco.get_wallet(uid)
+
+    if amount.lower() == "all":
+        amount = wallet_balance
+    else:
+        if not amount.isdigit() or int(amount) <= 0:
+            await interaction.response.send_message("`❌` Please enter a valid amount.", ephemeral=True)
+            return
+        amount = int(amount)
+
+    if wallet_balance < amount:
+        await interaction.response.send_message("`❌` You don't have enough funds in your wallet.", ephemeral=True)
+        return
+
+    eco.update_wallet(uid, -amount)
+    eco.update_bank(uid, amount)
+    await interaction.response.send_message(f"`🏦` Deposited $`{amount}` to your bank.")
+
+  @app_commands.command(name="withdraw", description="Withdraw money from your bank account")
+  @app_commands.describe(amount="Amount of money to withdraw (use 'all' to withdraw everything)")
+  async def withdraw(self, interaction: discord.Interaction, amount: str):
+    user = interaction.user
+    user_db.open_account(user)
+    uid = str(user.id)
+    bank_balance = eco.get_bank(uid)
+
+    if amount.lower() == "all":
+        amount = bank_balance
+    else:
+        if not amount.isdigit() or int(amount) <= 0:
+            await interaction.response.send_message("`❌` Please enter a valid amount.", ephemeral=True)
+            return
+        amount = int(amount)
+
+    if bank_balance < amount:
+        await interaction.response.send_message("`❌` You don't have enough funds in your bank.", ephemeral=True)
+        return
+
+    eco.update_bank(uid, -amount)
+    eco.update_wallet(uid, amount)
+    await interaction.response.send_message(f"`💸` Withdrew $`{amount}` from your bank.")
+
+  async def cog_load(self):
+    if self.env == "dev" and self.guild_id:
+      register_commands(self.bot, self, guild_id=self.guild_id)
+    else:
+      register_commands(self.bot, self)
 
 async def setup(bot):
   await bot.add_cog(Economy(bot))

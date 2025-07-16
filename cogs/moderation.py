@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from typing import Optional
+from core.command import register_commands
 import asyncio
 import os
 
@@ -169,8 +170,11 @@ class Moderation(commands.Cog):
     except Exception as e:
       await interaction.response.send_message(f"❌ An error occurred: {e}", ephemeral=True)
 
-  # async def cog_load(self):
-  #   self.bot.tree.add_command(self.sync_commands)
+  async def cog_load(self):
+    if self.env == "dev" and self.guild_id:
+      register_commands(self.bot, self, guild_id=self.guild_id)
+    else:
+      register_commands(self.bot, self)
 
 async def setup(bot):
   await bot.add_cog(Moderation(bot))

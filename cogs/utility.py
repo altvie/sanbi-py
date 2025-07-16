@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from typing import Optional
+from core.command import register_commands
 import datetime
 import os
 
@@ -199,6 +200,12 @@ class Utility(commands.Cog):
       embed.set_image(url=user.default_avatar.url)
 
     await interaction.response.send_message(embed=embed)
+
+  async def cog_load(self):
+    if self.env == "dev" and self.guild_id:
+      register_commands(self.bot, self, guild_id=self.guild_id)
+    else:
+      register_commands(self.bot, self)
 
 async def setup(bot):
   await bot.add_cog(Utility(bot))
