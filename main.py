@@ -16,7 +16,7 @@ logging.basicConfig(
   handlers=[
     logging.StreamHandler()
   ]
-)
+) 
 
 logger = logging.getLogger(__name__)
 logging.getLogger('discord').setLevel(logging.WARNING)
