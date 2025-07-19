@@ -140,6 +140,41 @@ class Economy(commands.Cog):
     eco.update_wallet(uid, amount)
     await interaction.response.send_message(f"`💸` Withdrew $`{amount}` from your bank.")
 
+  @app_commands.command(name="coinflip", description="Flip a coin and test your luck!")
+  @app_commands.describe(choice="Choose between 'head' or 'tail'", amount="Amount of coins to bet")
+  async def coinflip(self, interaction: discord.Interaction, choice: str, amount: int):
+    choice = choice.lower()
+    if choice not in ["head", "tail"]:
+      await interaction.response.send_message("`❌` Please choose either 'head' or 'tail'.", ephemeral=True)
+      return
+    
+    user_id = str(interaction.user.id)
+    balance = eco.get_wallet(user_id)
+
+    if amount <= 0:
+      await interaction.response.send_message("❌ Bet amount must be greater than 0.", ephemeral=True)
+      return
+
+    if amount > balance:
+      await interaction.response.send_message("❌ You don't have enough coins for this bet.", ephemeral=True)
+      return
+
+    result = random.choice(["head", "tail"])
+    win = result == choice
+
+    if win:
+      eco.update_wallet(user_id, amount)
+      msg = f"🎉 The coin landed on **{result}**! You won **{amount}** coins!"
+    else:
+      eco.update_wallet(user_id, -amount)
+      msg = f"💀 The coin landed on **{result}**. You lost **{amount}** coins."
+
+    embed = create_embed(
+      title="🪙 Coinflip",
+      description=msg
+    )
+    await interaction.response.send_message(embed=embed)
+
   async def cog_load(self):
     if self.env == "dev" and self.guild_id:
       register_commands(self.bot, self, guild_id=self.guild_id)
