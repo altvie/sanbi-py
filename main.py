@@ -38,12 +38,12 @@ class DiscordBot(commands.Bot):
     )
 
     self.initial_extensions = [
-      'cogs.economy',
       'cogs.events',
       'cogs.general',
       'cogs.help',
       'cogs.moderation',
-      'cogs.utility'
+      'cogs.utility',
+      'cogs.economy.commands'
     ]
   
   async def setup_hook(self):
