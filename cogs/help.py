@@ -65,7 +65,11 @@ class Help(commands.Cog):
       if not cmd.name or not cmd.description:
         continue
 
-      category = cmd.module.split('.')[-1].capitalize() if cmd.module else "General"
+      try:
+        category = cmd.module.split('.')[1].capitalize()
+      except IndexError:
+        category = "General"
+
       if category == "Moderation" and not is_owner:
         continue
 
