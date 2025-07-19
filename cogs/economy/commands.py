@@ -65,33 +65,6 @@ class Economy(commands.Cog):
     eco.update_stat(user.id, "work_count")
     await interaction.response.send_message(f"`💼` You earned ${earned} from working!")
 
-  @app_commands.command(name="gamble", description="Try your luck and gamble some money!")
-  @app_commands.describe(amount="Amount of money to gamble")
-  async def gamble(self, interaction: discord.Interaction, amount: int):
-    user = interaction.user
-    uid = str(user.id)
-
-    user_db.open_account(user)
-    wallet = eco.get_wallet(uid)
-
-    if amount <= 0:
-      await interaction.response.send_message("`❌` The amount must be greater than 0.", ephemeral=True)
-      return
-
-    if amount > wallet:
-      await interaction.response.send_message("`❌` You don't have enough money to gamble that much.", ephemeral=True)
-      return
-
-    # Winning chance 45%
-    if random.random() < 0.45:
-      eco.update_wallet(uid, amount)
-      eco.update_stat(uid, "gambles_won")
-      await interaction.response.send_message(f"`🎉` You **won** $`{amount}`! Your luck is shining!")
-    else:
-      eco.update_wallet(uid, -amount)
-      eco.update_stat(uid, "gambles_lost")
-      await interaction.response.send_message(f"`💸` You **lost** $`{amount}`. Better luck next time!")
-
   @app_commands.command(name="deposit", description="Deposit money to your bank account")
   @app_commands.describe(amount="Amount of money to deposit (use 'all' to deposit everything)")
   async def deposit(self, interaction: discord.Interaction, amount: str):
