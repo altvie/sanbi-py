@@ -101,16 +101,16 @@ class Economy(commands.Cog):
     wallet_balance = eco.get_wallet(uid)
 
     if amount.lower() == "all":
-        amount = wallet_balance
+      amount = wallet_balance
     else:
-        if not amount.isdigit() or int(amount) <= 0:
-            await interaction.response.send_message("`❌` Please enter a valid amount.", ephemeral=True)
-            return
-        amount = int(amount)
+      if not amount.isdigit() or int(amount) <= 0:
+        await interaction.response.send_message("`❌` Please enter a valid amount.", ephemeral=True)
+        return
+      amount = int(amount)
 
     if wallet_balance < amount:
-        await interaction.response.send_message("`❌` You don't have enough funds in your wallet.", ephemeral=True)
-        return
+      await interaction.response.send_message("`❌` You don't have enough funds in your wallet.", ephemeral=True)
+      return
 
     eco.update_wallet(uid, -amount)
     eco.update_bank(uid, amount)
@@ -125,16 +125,16 @@ class Economy(commands.Cog):
     bank_balance = eco.get_bank(uid)
 
     if amount.lower() == "all":
-        amount = bank_balance
+      amount = bank_balance
     else:
-        if not amount.isdigit() or int(amount) <= 0:
-            await interaction.response.send_message("`❌` Please enter a valid amount.", ephemeral=True)
-            return
-        amount = int(amount)
+      if not amount.isdigit() or int(amount) <= 0:
+        await interaction.response.send_message("`❌` Please enter a valid amount.", ephemeral=True)
+        return
+      amount = int(amount)
 
     if bank_balance < amount:
-        await interaction.response.send_message("`❌` You don't have enough funds in your bank.", ephemeral=True)
-        return
+      await interaction.response.send_message("`❌` You don't have enough funds in your bank.", ephemeral=True)
+      return
 
     eco.update_bank(uid, -amount)
     eco.update_wallet(uid, amount)
