@@ -113,6 +113,41 @@ class Economy(commands.Cog):
     eco.update_wallet(uid, amount)
     await interaction.response.send_message(f"`💸` Withdrew $`{amount}` from your bank.")
 
+  @app_commands.command(name="leaderboard", description="View the top richest players")
+  async def leaderboard(self, interaction: discord.Interaction):
+    guild = interaction.guild
+    if guild is None:
+      await interaction.response.send_message("❌ This command can only be used in a server.", ephemeral=True)
+      return
+    
+    data = eco.load_data()
+
+    # Filter only members in the current server
+    leaderboard_data = []
+    for member in guild.members:
+      uid = str(member.id)
+      if uid in data:
+        wallet = data[uid].get("economy", {}).get("wallet", 0)
+        leaderboard_data.append((member, wallet))
+
+    # Sort by total balance
+    leaderboard_data.sort(key=lambda x: x[1], reverse=True)
+    top10 = leaderboard_data[:10]
+
+    if not top10:
+      await interaction.response.send_message("No leaderboard data available for this server.", ephemeral=True)
+      return
+
+    description = ""
+    for i, (member, wallet) in enumerate(top10, start=1):
+      description += f"`#{i}` {member.mention} - 💰 ${wallet:,}\n"
+
+    embed = create_embed(
+      title="🏆 Leaderboard - Top 10",
+      description=description
+    )
+    await interaction.response.send_message(embed=embed)
+
   @app_commands.command(name="coinflip", description="Flip a coin and test your luck!")
   @app_commands.describe(choice="Choose between 'head' or 'tail'", amount="Amount of coins to bet")
   async def coinflip(self, interaction: discord.Interaction, choice: str, amount: int):
