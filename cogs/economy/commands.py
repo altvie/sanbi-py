@@ -140,7 +140,7 @@ class Economy(commands.Cog):
 
     description = ""
     for i, (member, wallet) in enumerate(top10, start=1):
-      description += f"`#{i}` {member.mention} - 💰 ${wallet:,}\n"
+      description += f"`#{i}` {member.mention} - 💰 {wallet:,} coins\n"
 
     embed = create_embed(
       title="🏆 Leaderboard - Top 10",
